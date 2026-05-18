@@ -1,1 +1,7 @@
 # CustomerRegistryAPI
+
+O projeto foi desenvolvido dentro de uma máquina virtual no ambiente do codespaces do github
+
+```bash
+Linux codespaces-ab61da 6.8.0-1044-azure #50~22.04.1-Ubuntu SMP Wed Dec  3 15:13:22 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux
+```
