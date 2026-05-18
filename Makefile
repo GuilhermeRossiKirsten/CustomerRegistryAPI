@@ -33,6 +33,9 @@ migrate-up: ## Apply migrations
 migrate-down: ## Roll back last migration	
 	migrate -path migrations -database "${DATABASE_URL}" down 1
 
+migrate-create:
+	migrate create -ext sql -dir migrations -seq $(name)
+
 swag: ## Generate OpenAPI docs
 	swag init -g ./cmd/api/main.go -o ./docs
 
