@@ -1,0 +1,42 @@
+services:
+  postgress:
+    image: postgres:16-alpine
+    container_name: customers-registry-database
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: customers-registry
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d customers-registry"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - customers-registry-network
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: customers-registry-api
+    ports:
+      - "8080:8080"
+    environment:
+      DATABASE_URL: postgres://app:app@postgress:5432/customers-registry?sslmode=disable
+    depends_on:
+      postgress:
+        condition: service_healthy
+    networks:
+      - customers-registry-network
+
+networks:
+  customers-registry-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+

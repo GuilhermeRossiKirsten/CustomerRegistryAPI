@@ -1,0 +1,21 @@
+.git
+.gitignore
+.idea
+.vscode
+.DS_Store
+
+bin/
+*.exe
+*.test
+*.out
+coverage.html
+
+# Local-only files
+.env
+.env.local
+README.md
+Makefile
+
+# Docker artifacts
+Dockerfile
+docker-compose.yml
