@@ -1,21 +1,36 @@
 .git
 .gitignore
+.github
 .idea
 .vscode
-.DS_Store
+**/.DS_Store
+**/Thumbs.db
 
+# Build artifacts
 bin/
+dist/
+out/
 *.exe
 *.test
 *.out
-coverage.html
+coverage.*
 
-# Local-only files
-.env
-.env.local
+# Dev-only files not needed in image
 README.md
 Makefile
+load-test.js
+request.http
+docs/
 
-# Docker artifacts
-Dockerfile
+# Compose / k8s manifests
 docker-compose.yml
+docker-compose.*.yml
+k8s/
+
+# Local env
+.env
+.env.*
+!.env.example
+
+# Test fuzz corpora
+**/testdata/fuzz
