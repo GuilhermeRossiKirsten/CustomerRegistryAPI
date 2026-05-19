@@ -53,14 +53,16 @@ spec:
             - name: SWAGGER_HOST
               value: http://localhost:8080
           readinessProbe:
-            tcpSocket:
+            httpGet:
+              path: /readyz
               port: http
             initialDelaySeconds: 3
             periodSeconds: 5
             timeoutSeconds: 2
             failureThreshold: 3
           livenessProbe:
-            tcpSocket:
+            httpGet:
+              path: /healthz
               port: http
             initialDelaySeconds: 15
             periodSeconds: 20

@@ -19,6 +19,7 @@ import (
 	"github.com/GuilhermeRossiKirsten/CustomerRegistryAPI/internal/config"
 	"github.com/GuilhermeRossiKirsten/CustomerRegistryAPI/internal/customer"
 	"github.com/GuilhermeRossiKirsten/CustomerRegistryAPI/internal/database"
+	"github.com/GuilhermeRossiKirsten/CustomerRegistryAPI/internal/health"
 )
 
 func main() {
@@ -38,6 +39,7 @@ func main() {
 
 	mux := http.NewServeMux()
 	handler.Register(mux)
+	health.NewHandler(db).Register(mux)
 	mux.Handle("/swagger/", httpSwagger.WrapHandler)
 
 	addr := ":" + config.Env("APP_PORT", "8080")
