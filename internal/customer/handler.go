@@ -1,17 +1,26 @@
 package customer
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"strconv"
 	"strings"
 )
 
-type Handler struct {
-	svc *Service
+type ServiceInterface interface {
+	Create(ctx context.Context, input CreateCustomerInput) (*Customer, error)
+	List(ctx context.Context, limit, offset int) ([]Customer, error)
+	GetByID(ctx context.Context, id string) (*Customer, error)
+	GetByDocument(ctx context.Context, document string) (*Customer, error)
+	UpdateStatus(ctx context.Context, id, status string) error
 }
 
-func NewHandler(svc *Service) *Handler {
+type Handler struct {
+	svc ServiceInterface
+}
+
+func NewHandler(svc ServiceInterface) *Handler {
 	return &Handler{svc: svc}
 }
 

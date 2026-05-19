@@ -1,0 +1,163 @@
+### Customer Registry API - HTTP Request Examples
+### Configure a variável base_url conforme necessário
+@base_url = http://localhost:8080
+
+### ===================== CREATE CUSTOMERS =====================
+
+### Criar cliente 1 - Risco BAIXO
+POST {{base_url}}/customers
+Content-Type: application/json
+
+{
+  "document": "DOC-00001",
+  "name": "João Silva",
+  "score": 850,
+  "risk_level": "LOW",
+  "income_range": "5000-8000",
+  "status": "ACTIVE"
+}
+
+### Criar cliente 2 - Risco MÉDIO
+POST {{base_url}}/customers
+Content-Type: application/json
+
+{
+  "document": "DOC-00002",
+  "name": "Maria Santos",
+  "score": 650,
+  "risk_level": "MEDIUM",
+  "income_range": "3000-5000",
+  "status": "ACTIVE"
+}
+
+### Criar cliente 3 - Risco ALTO
+POST {{base_url}}/customers
+Content-Type: application/json
+
+{
+  "document": "DOC-00003",
+  "name": "Pedro Costa",
+  "score": 400,
+  "risk_level": "HIGH",
+  "income_range": "1000-3000",
+  "status": "UNDER_REVIEW"
+}
+
+### Criar cliente 4 - Score muito alto
+POST {{base_url}}/customers
+Content-Type: application/json
+
+{
+  "document": "DOC-00004",
+  "name": "Ana Oliveira",
+  "score": 950,
+  "risk_level": "LOW",
+  "income_range": "8000-10000",
+  "status": "ACTIVE"
+}
+
+### Criar cliente 5 - Inativo
+POST {{base_url}}/customers
+Content-Type: application/json
+
+{
+  "document": "DOC-00005",
+  "name": "Carlos Mendes",
+  "score": 500,
+  "risk_level": "MEDIUM",
+  "income_range": "2000-4000",
+  "status": "INACTIVE"
+}
+
+### ===================== LIST CUSTOMERS =====================
+
+### Listar todos os clientes (default: limit=20, offset=0)
+GET {{base_url}}/customers
+
+### Listar clientes com limit=2
+GET {{base_url}}/customers?limit=2
+
+### Listar clientes com limit=2 e offset=2
+GET {{base_url}}/customers?limit=2&offset=2
+
+### Listar clientes com limit=10 e offset=0
+GET {{base_url}}/customers?limit=10&offset=0
+
+### ===================== GET BY ID =====================
+
+### Buscar cliente por ID (substitua o UUID pelo ID retornado na criação)
+GET {{base_url}}/customers/52f2b43e-8123-4b38-8284-dc66f2ca7748
+
+### ===================== GET BY DOCUMENT =====================
+
+### Buscar cliente por documento - DOC-00001
+GET {{base_url}}/customers/document/DOC-00001
+
+### Buscar cliente por documento - DOC-00002
+GET {{base_url}}/customers/document/DOC-00002
+
+### Buscar cliente por documento - DOC-00003
+GET {{base_url}}/customers/document/DOC-00003
+
+### ===================== UPDATE STATUS =====================
+
+### Atualizar status para ACTIVE
+PATCH {{base_url}}/customers/52f2b43e-8123-4b38-8284-dc66f2ca7748/status
+Content-Type: application/json
+
+{
+  "status": "ACTIVE"
+}
+
+### Atualizar status para INACTIVE
+PATCH {{base_url}}/customers/52f2b43e-8123-4b38-8284-dc66f2ca7748/status
+Content-Type: application/json
+
+{
+  "status": "INACTIVE"
+}
+
+### Atualizar status para UNDER_REVIEW
+PATCH {{base_url}}/customers/1f4f3c2a-8f57-4d3d-9b3e-4a2c4e2b5a1d/status
+Content-Type: application/json
+
+{
+  "status": "UNDER_REVIEW"
+}
+
+### ===================== ERROR CASES =====================
+
+### Teste - Criar cliente com documento duplicado (deve retornar erro 409)
+POST {{base_url}}/customers
+Content-Type: application/json
+
+{
+  "document": "DOC-00001",
+  "name": "Duplicado",
+  "score": 700,
+  "risk_level": "LOW",
+  "income_range": "5000-8000",
+  "status": "ACTIVE"
+}
+
+### Teste - JSON inválido (deve retornar erro 400)
+POST {{base_url}}/customers
+Content-Type: application/json
+
+{
+  invalid json
+}
+
+### Teste - Buscar cliente com ID inexistente (deve retornar erro 404)
+GET {{base_url}}/customers/00000000-0000-0000-0000-000000000000
+
+### Teste - Buscar cliente com documento inexistente (deve retornar erro 404)
+GET {{base_url}}/customers/document/INEXISTENTE
+
+### Teste - Atualizar status de cliente com ID inexistente (deve retornar erro 404)
+PATCH {{base_url}}/customers/00000000-0000-0000-0000-000000000000/status
+Content-Type: application/json
+
+{
+  "status": "ACTIVE"
+}
