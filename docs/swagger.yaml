@@ -1,0 +1,249 @@
+basePath: /
+definitions:
+  customer.CreateCustomerInput:
+    properties:
+      document:
+        description: |-
+          required: true
+          example: FAKE-00001
+        type: string
+      income_range:
+        description: 'example: 3000-5000'
+        type: string
+      name:
+        description: |-
+          required: true
+          example: Cliente Simulado A
+        type: string
+      risk_level:
+        description: |-
+          required: true
+          enum: LOW,MEDIUM,HIGH
+          example: LOW
+        type: string
+      score:
+        description: |-
+          required: true
+          minimum: 0
+          maximum: 1000
+          example: 742
+        type: integer
+      status:
+        description: |-
+          required: true
+          enum: ACTIVE,INACTIVE,UNDER_REVIEW
+          example: ACTIVE
+        type: string
+    type: object
+  customer.Customer:
+    properties:
+      created_at:
+        type: string
+      document:
+        description: |-
+          Documento único do cliente.
+          example: FAKE-00001
+        type: string
+      id:
+        description: |-
+          ID único em UUID v4.
+          example: 1f4f3c2a-8f57-4d3d-9b3e-4a2c4e2b5a1d
+        type: string
+      income_range:
+        description: |-
+          Faixa de renda.
+          example: 3000-5000
+        type: string
+      name:
+        description: |-
+          Nome do cliente.
+          example: Cliente Simulado A
+        type: string
+      risk_level:
+        description: |-
+          Nível de risco.
+          enum: LOW,MEDIUM,HIGH
+          example: LOW
+        type: string
+      score:
+        description: |-
+          Score de crédito (0–1000).
+          example: 742
+        type: integer
+      status:
+        description: |-
+          Status atual.
+          enum: ACTIVE,INACTIVE,UNDER_REVIEW
+          example: ACTIVE
+        type: string
+      updated_at:
+        type: string
+    type: object
+  customer.ErrorResponse:
+    properties:
+      error:
+        description: |-
+          Mensagem descritiva do erro.
+          example: invalid JSON payload
+        type: string
+    type: object
+  customer.UpdateStatusInput:
+    properties:
+      status:
+        description: |-
+          required: true
+          enum: ACTIVE,INACTIVE,UNDER_REVIEW
+          example: UNDER_REVIEW
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Customer registration and management API
+  title: Customer Registry API
+  version: "1.0"
+paths:
+  /customers:
+    get:
+      consumes:
+      - application/json
+      description: Lista clientes com paginação
+      parameters:
+      - default: 20
+        description: Limit
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/customer.Customer'
+            type: array
+      summary: Lista clientes
+      tags:
+      - customers
+    post:
+      consumes:
+      - application/json
+      description: Cria um novo cliente no sistema
+      parameters:
+      - description: Customer data
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/customer.CreateCustomerInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/customer.Customer'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/customer.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/customer.ErrorResponse'
+      summary: Cria um novo cliente
+      tags:
+      - customers
+  /customers/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Busca um cliente pelo ID
+      parameters:
+      - description: Customer ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/customer.Customer'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/customer.ErrorResponse'
+      summary: Busca cliente por ID
+      tags:
+      - customers
+  /customers/{id}/status:
+    patch:
+      consumes:
+      - application/json
+      description: Atualiza apenas o status de um cliente
+      parameters:
+      - description: Customer ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: New status
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/customer.UpdateStatusInput'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/customer.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/customer.ErrorResponse'
+      summary: Atualiza status do cliente
+      tags:
+      - customers
+  /customers/document/{document}:
+    get:
+      consumes:
+      - application/json
+      description: Busca um cliente pelo documento
+      parameters:
+      - description: Customer document
+        in: path
+        name: document
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/customer.Customer'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/customer.ErrorResponse'
+      summary: Busca cliente por documento
+      tags:
+      - customers
+schemes:
+- http
+- https
+swagger: "2.0"

@@ -4,7 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"os"
+
+	"github.com/GuilhermeRossiKirsten/CustomerRegistryAPI/internal/config"
 )
 
 func GetDBConnection() (*sql.DB, error) {
@@ -31,20 +32,12 @@ func verifyDBConnection(db *sql.DB) error {
 }
 
 func getDBConnectionStr() string {
-	host := env("DB_HOST", "localhost")
-	port := env("DB_PORT", "5432")
-	user := env("DB_USER", "app")
-	dbname := env("DB_NAME", "customers-registry")
-	password := env("DB_PASSWORD", "app")
+	host := config.Env("DB_HOST", "localhost")
+	port := config.Env("DB_PORT", "5432")
+	user := config.Env("DB_USER", "app")
+	dbname := config.Env("DB_NAME", "customers-registry")
+	password := config.Env("DB_PASSWORD", "app")
 
 	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
-}
-
-func env(key, defaultVal string) string {
-	if value := os.Getenv(key); value != "" {
-		return value
-	}
-	log.Printf("Environment variable %s not set, using default value: %s", key, defaultVal)
-	return defaultVal
 }

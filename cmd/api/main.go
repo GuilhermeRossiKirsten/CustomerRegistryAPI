@@ -1,13 +1,23 @@
+// @title Customer Registry API
+// @version 1.0
+// @description Customer registration and management API
+// @host localhost:8080
+// @basePath /
+// @schemes http https
 package main
 
 import (
-	"fmt"
 	"log"
+	"net/http"
 	"os"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 
+	httpSwagger "github.com/swaggo/http-swagger"
+
+	_ "github.com/GuilhermeRossiKirsten/CustomerRegistryAPI/docs"
 	"github.com/GuilhermeRossiKirsten/CustomerRegistryAPI/internal/config"
+	"github.com/GuilhermeRossiKirsten/CustomerRegistryAPI/internal/customer"
 	"github.com/GuilhermeRossiKirsten/CustomerRegistryAPI/internal/database"
 )
 
@@ -22,15 +32,17 @@ func main() {
 	}
 	defer db.Close()
 
-	row := db.QueryRow("SELECT 1+1")
+	repo := customer.NewRepository(db)
+	service := customer.NewService(repo)
+	handler := customer.NewHandler(service)
 
-	var result int
+	mux := http.NewServeMux()
+	handler.Register(mux)
+	mux.Handle("/swagger/", httpSwagger.WrapHandler)
 
-	err = row.Scan(&result)
-	if err != nil {
-		log.Fatalf("Failed to scan result: %v", err)
-		os.Exit(1)
+	addr := ":" + config.Env("APP_PORT", "8080")
+	log.Printf("listening on %s", addr)
+	if err := http.ListenAndServe(addr, mux); err != nil {
+		log.Fatal(err)
 	}
-	
-	fmt.Printf("%v\n", result)
 }
