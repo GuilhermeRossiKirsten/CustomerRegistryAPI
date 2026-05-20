@@ -1,6 +1,22 @@
 ### Customer Registry API - HTTP Request Examples
-### Configure a variável base_url conforme necessário
+### Compatível com a extensão "REST Client" do VS Code e com o cliente HTTP do JetBrains.
+### Ajuste @base_url conforme o ambiente.
+
 @base_url = http://localhost:8080
+@customer_id = 52f2b43e-8123-4b38-8284-dc66f2ca7748
+
+### ===================== HEALTH =====================
+
+### Liveness — processo vivo (200 sempre que o binário estiver rodando)
+GET {{base_url}}/healthz
+
+### Readiness — 200 se o DB respondeu ao ping, 503 caso contrário
+GET {{base_url}}/readyz
+
+### ===================== SWAGGER =====================
+
+### Abrir a UI do Swagger no navegador
+GET {{base_url}}/swagger/index.html
 
 ### ===================== CREATE CUSTOMERS =====================
 
@@ -74,10 +90,10 @@ Content-Type: application/json
 ### Listar todos os clientes (default: limit=20, offset=0)
 GET {{base_url}}/customers
 
-### Listar clientes com limit=2
+### Listar clientes com limit=2 (primeira página)
 GET {{base_url}}/customers?limit=2
 
-### Listar clientes com limit=2 e offset=2
+### Listar clientes com limit=2 e offset=2 (segunda página)
 GET {{base_url}}/customers?limit=2&offset=2
 
 ### Listar clientes com limit=10 e offset=0
@@ -85,8 +101,8 @@ GET {{base_url}}/customers?limit=10&offset=0
 
 ### ===================== GET BY ID =====================
 
-### Buscar cliente por ID (substitua o UUID pelo ID retornado na criação)
-GET {{base_url}}/customers/52f2b43e-8123-4b38-8284-dc66f2ca7748
+### Buscar cliente por ID (substitua @customer_id no topo pelo UUID retornado na criação)
+GET {{base_url}}/customers/{{customer_id}}
 
 ### ===================== GET BY DOCUMENT =====================
 
@@ -102,7 +118,7 @@ GET {{base_url}}/customers/document/DOC-00003
 ### ===================== UPDATE STATUS =====================
 
 ### Atualizar status para ACTIVE
-PATCH {{base_url}}/customers/52f2b43e-8123-4b38-8284-dc66f2ca7748/status
+PATCH {{base_url}}/customers/{{customer_id}}/status
 Content-Type: application/json
 
 {
@@ -110,7 +126,7 @@ Content-Type: application/json
 }
 
 ### Atualizar status para INACTIVE
-PATCH {{base_url}}/customers/52f2b43e-8123-4b38-8284-dc66f2ca7748/status
+PATCH {{base_url}}/customers/{{customer_id}}/status
 Content-Type: application/json
 
 {
@@ -118,7 +134,7 @@ Content-Type: application/json
 }
 
 ### Atualizar status para UNDER_REVIEW
-PATCH {{base_url}}/customers/1f4f3c2a-8f57-4d3d-9b3e-4a2c4e2b5a1d/status
+PATCH {{base_url}}/customers/{{customer_id}}/status
 Content-Type: application/json
 
 {
@@ -127,7 +143,7 @@ Content-Type: application/json
 
 ### ===================== ERROR CASES =====================
 
-### Teste - Criar cliente com documento duplicado (deve retornar erro 409)
+### Documento duplicado (deve retornar 409)
 POST {{base_url}}/customers
 Content-Type: application/json
 
@@ -140,7 +156,7 @@ Content-Type: application/json
   "status": "ACTIVE"
 }
 
-### Teste - JSON inválido (deve retornar erro 400)
+### JSON inválido (deve retornar 400)
 POST {{base_url}}/customers
 Content-Type: application/json
 
@@ -148,13 +164,61 @@ Content-Type: application/json
   invalid json
 }
 
-### Teste - Buscar cliente com ID inexistente (deve retornar erro 404)
+### Score fora do intervalo 0-1000 (deve retornar 400)
+POST {{base_url}}/customers
+Content-Type: application/json
+
+{
+  "document": "DOC-INVALID-SCORE",
+  "name": "Score Inválido",
+  "score": 1500,
+  "risk_level": "LOW",
+  "income_range": "5000-8000",
+  "status": "ACTIVE"
+}
+
+### risk_level inválido (deve retornar 400)
+POST {{base_url}}/customers
+Content-Type: application/json
+
+{
+  "document": "DOC-INVALID-RISK",
+  "name": "Risk Inválido",
+  "score": 700,
+  "risk_level": "EXTREME",
+  "income_range": "5000-8000",
+  "status": "ACTIVE"
+}
+
+### status inválido (deve retornar 400)
+POST {{base_url}}/customers
+Content-Type: application/json
+
+{
+  "document": "DOC-INVALID-STATUS",
+  "name": "Status Inválido",
+  "score": 700,
+  "risk_level": "LOW",
+  "income_range": "5000-8000",
+  "status": "PENDING"
+}
+
+### Campos obrigatórios faltando (deve retornar 400)
+POST {{base_url}}/customers
+Content-Type: application/json
+
+{
+  "document": "",
+  "name": ""
+}
+
+### Buscar cliente com ID inexistente (deve retornar 404)
 GET {{base_url}}/customers/00000000-0000-0000-0000-000000000000
 
-### Teste - Buscar cliente com documento inexistente (deve retornar erro 404)
+### Buscar cliente com documento inexistente (deve retornar 404)
 GET {{base_url}}/customers/document/INEXISTENTE
 
-### Teste - Atualizar status de cliente com ID inexistente (deve retornar erro 404)
+### Atualizar status de cliente com ID inexistente (deve retornar 404)
 PATCH {{base_url}}/customers/00000000-0000-0000-0000-000000000000/status
 Content-Type: application/json
 
