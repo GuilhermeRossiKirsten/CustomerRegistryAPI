@@ -76,6 +76,21 @@ spec:
               memory: 256Mi
           securityContext:
             allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
             capabilities:
               drop: ["ALL"]
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: customers-registry-api
+  labels:
+    app.kubernetes.io/name: customers-registry-api
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: http
+      name: http
+  selector:
+    app.kubernetes.io/name: customers-registry-api
