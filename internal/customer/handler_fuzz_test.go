@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"testing"
 
 	"github.com/GuilhermeRossiKirsten/CustomerRegistryAPI/internal/error_handler"
@@ -118,12 +119,14 @@ func FuzzListHandlerQueryParams(f *testing.F) {
 
 		handler := NewHandler(mockSvc)
 
-		url := "/customers"
+		u := &url.URL{Path: "/customers"}
 		if key != "" && value != "" {
-			url += "?" + key + "=" + value
+			q := url.Values{}
+			q.Set(key, value)
+			u.RawQuery = q.Encode()
 		}
 
-		req := httptest.NewRequest("GET", url, nil)
+		req := httptest.NewRequest("GET", u.String(), nil)
 		w := httptest.NewRecorder()
 
 		handler.list(w, req)
@@ -160,7 +163,7 @@ func FuzzGetByIDHandler(f *testing.F) {
 
 		handler := NewHandler(mockSvc)
 
-		req := httptest.NewRequest("GET", "/customers/"+id, nil)
+		req := httptest.NewRequest("GET", "/customers/_", nil)
 		req.SetPathValue("id", id)
 		w := httptest.NewRecorder()
 
@@ -198,7 +201,7 @@ func FuzzGetByDocumentHandler(f *testing.F) {
 
 		handler := NewHandler(mockSvc)
 
-		req := httptest.NewRequest("GET", "/customers/document/"+document, nil)
+		req := httptest.NewRequest("GET", "/customers/document/_", nil)
 		req.SetPathValue("document", document)
 		w := httptest.NewRecorder()
 

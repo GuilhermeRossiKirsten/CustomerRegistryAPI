@@ -40,8 +40,14 @@ test: ## Run all tests
 test-race: ## Run all tests with race detector
 	go test -race ./...
 
-fuzz: ## Run fuzz tests on customer service (30s)
-	go test -fuzz=Fuzz -fuzztime=30s ./internal/customer
+FUZZ_PKG  ?= ./internal/customer
+FUZZ_TIME ?= 30s
+
+fuzz: ## Run all fuzz tests in customer package (FUZZ_TIME=30s per test)
+	@for t in $$(go test -list '^Fuzz' $(FUZZ_PKG) | grep -E '^Fuzz'); do \
+		echo "==> $$t"; \
+		go test -run='^$$' -fuzz="^$$t$$" -fuzztime=$(FUZZ_TIME) $(FUZZ_PKG) || exit 1; \
+	done
 
 lint: ## Run golangci-lint
 	golangci-lint run
