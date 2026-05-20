@@ -31,7 +31,11 @@ func main() {
 		log.Fatalf("Failed to connect to database: %v", err)
 		os.Exit(1)
 	}
-	defer db.Close()
+	defer func() {
+		if err := db.Close(); err != nil {
+			log.Printf("Failed to close database connection: %v", err)
+		}
+	}()
 
 	repo := customer.NewRepository(db)
 	service := customer.NewService(repo)

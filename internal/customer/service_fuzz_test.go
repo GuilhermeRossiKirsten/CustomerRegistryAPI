@@ -42,12 +42,13 @@ func FuzzServiceCreate(f *testing.F) {
 		if err == nil {
 			if customer == nil {
 				t.Error("customer não deve ser nil quando não há erro")
-			}
-			if customer.ID == "" {
-				t.Error("customer.ID não deve estar vazio")
-			}
-			if customer.Document != document {
-				t.Errorf("Document não foi preservado: %s != %s", customer.Document, document)
+			} else {
+				if customer.ID == "" {
+					t.Error("customer.ID não deve estar vazio")
+				}
+				if customer.Document != document {
+					t.Errorf("Document não foi preservado: %s != %s", customer.Document, document)
+				}
 			}
 		} else {
 			if customer != nil {
@@ -196,13 +197,8 @@ func FuzzServiceUpdateStatus(f *testing.F) {
 			if callCount != 1 {
 				t.Errorf("Repository deve ser chamado uma vez, foi %d", callCount)
 			}
-		} else {
-			// Status inválido deve retornar erro sem chamar repo
-			if err == nil && status != "" {
-				// Se é uma string não vazia e inválida, deve ter erro
-				// Mas strings vazias e inválidas devem ter erro
-			}
 		}
+		// Status inválido deve retornar erro sem chamar repo
 	})
 }
 

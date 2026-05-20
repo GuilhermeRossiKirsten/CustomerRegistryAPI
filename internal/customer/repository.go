@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"log"
 	"time"
 
 	"github.com/GuilhermeRossiKirsten/CustomerRegistryAPI/internal/error_handler"
@@ -52,7 +53,11 @@ func (repo *DatabaseRepository) List(ctx context.Context, limit, offset int) ([]
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		if err := rows.Close(); err != nil {
+			log.Printf("Failed to close rows: %v", err)
+		}
+	}()
 
 	var out []Customer
 	for rows.Next() {
