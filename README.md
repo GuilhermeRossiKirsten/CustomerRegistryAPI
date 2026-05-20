@@ -1,6 +1,6 @@
 # Customer Registry API
 
-API HTTP em Go para cadastro e gestão de clientes (CRUD parcial: criação, listagem paginada, busca por ID/documento e atualização de status). Persistência em PostgreSQL, documentação Swagger e deploy via Docker Compose ou Kubernetes.
+API HTTP em Go para cadastro e gestão de clientes (CRUD: criação, listagem paginada, busca por ID/documento e atualização de status). Persistência em PostgreSQL, documentação Swagger e deploy via Docker Compose ou Kubernetes.
 
 > Todos os fluxos abaixo têm um atalho no `Makefile`. Rode `make help` para ver a lista completa.
 
